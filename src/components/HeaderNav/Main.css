@@ -1,0 +1,14 @@
+.dash-header{
+    background-color: #eb1163;
+}
+
+.navbar-nav a,
+.navbar-nav a:hover{
+    color: white;
+}
+.nav-item a, 
+.nav-item a:hover{
+    color: #eb1163;
+}
+
+main, .nav{padding-top: 30px;}

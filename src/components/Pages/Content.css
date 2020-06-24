@@ -1,0 +1,14 @@
+.mt-n1 {
+    margin-top: 40px !important;
+  }
+  @media only screen and (min-width: 600px){
+    .analytic-grid{
+      max-width: 50% !important;
+  }
+  }
+
+  @media only screen and (max-width: 600px){
+    .analytic-grid{
+      padding-bottom: 20px !important;
+   }
+  }

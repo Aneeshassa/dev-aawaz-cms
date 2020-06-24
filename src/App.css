@@ -1,0 +1,98 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.dash-header {
+  background-color: #eb1163;
+ 
+}
+.sidebar-sticky{
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar .nav-link{
+  font-weight: 500;
+    color: #333;
+}
+.sidebar .nav-link:hover{
+  background-color: #ebebeb;
+}
+.sidebar .nav-link.active{
+  color: #eb1163;
+}
+.App-link {
+  color: #61dafb;
+}
+
+.pagination {
+  justify-content: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul.pagination li {
+  display: inline-block;
+  width: 30px;
+  border: 1px solid #e2e2e2;
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+}
+
+ul.pagination li a {
+  text-decoration: none;
+  color: #eb1163;
+  font-size: 20px;
+}
+
+ul.pagination li.active a {
+  color: white;
+}
+ul.pagination li.active {
+  background-color: #eb1163;
+}
+
+ul.pagination li a:hover,
+ul.pagination li a.active {
+  color: black;
+}
+
+.page-selection {
+  width: 48px;
+  height: 30px;
+  color: #eb1163;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
