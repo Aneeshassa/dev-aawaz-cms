@@ -5,17 +5,4 @@ steps:
 # Push the image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/aawaz-uat/dev-aawaz-backend-web:$COMMIT_SHA']
-# Deploy image to Cloud Run
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-  - 'run'
-  - 'deploy'
-  - 'dev-aawaz-bcknd-web'
-  - '--image'
-  - 'gcr.io/aawaz-uat/dev-aawaz-backend-web:$COMMIT_SHA'
-  - '--region'
-  - 'us-west1'
-  - '--platform'
-  - 'managed'
-images:
-- gcr.io/aawaz-uat/dev-aawaz-backend-web
+
