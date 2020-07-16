@@ -1,7 +1,7 @@
 import http from '../http-common';
 import auth from './authentication';
 
-const baseURL = "https://api.samortech.com/api";
+const baseURL = "https://prod.aawaz.com/api";
 
 const getAllShow = () => {
     return http.get(`${baseURL}/shows/?limit=100`,{auth: auth});
