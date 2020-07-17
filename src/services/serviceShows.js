@@ -4,7 +4,7 @@ import auth from './authentication';
 const baseURL = "https://prod.aawaz.com/api";
 
 const getAllShow = () => {
-    return http.get(`${baseURL}/shows/?limit=100`,{auth: auth});
+    return http.get(`${baseURL}/shows/?all=True -- All Results`,{auth: auth});
 };
 
 const getAllShowPaginate = (currentPage = 0)=>{
