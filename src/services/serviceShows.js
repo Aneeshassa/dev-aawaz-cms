@@ -20,7 +20,7 @@ const createShow = data => {
 }
 
 const updateShow = (id, data) => {
-    return http.patch(`${baseURL}/shows/${id}/`,{auth: auth, data: data});
+    return http.patch(`${baseURL}/shows/${id}/`,{data: data}, {auth: auth});
 }
 
 const removeShow = id => {
