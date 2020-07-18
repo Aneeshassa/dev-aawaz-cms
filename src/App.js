@@ -17,6 +17,7 @@ import Platforms from './components/Pages/Platforms';
   import AddPlatforms from './components/Pages/Platforms/AddPlatforms';
 
 import Channel from './components/Pages/Channel';
+  import ChannelSheet from './components/Pages/Channel/ChannelSheet'
   import AllChannel from './components/Pages/Channel/AllChannel';
   import AddChannel from './components/Pages/Channel/AddChannel';
 
@@ -28,6 +29,7 @@ import Shows from './components/Pages/Shows';
   import EditShowEpisode from './components/Pages/Shows/EditShowEpisode'
 
 import Category from './components/Pages/Category';
+  import CategorySheet from './components/Pages/Category/CategorySheet'
   import AllCategory from './components/Pages/Category/AllCategory';
   import AddCategory from './components/Pages/Category/AddCategory';
  
@@ -65,6 +67,7 @@ function App() {
                   <Route path="/platforms/new-platforms" component={AddPlatforms} />
 
               <Route path="/channel" exact component={Channel} />
+                  <Route path="/channel/sheet-upload" component={ChannelSheet} />
                   <Route path="/channel/new-channel" component={AddChannel} />
                   <Route path="/channel/all-channel" component={AllChannel} />
 
@@ -76,6 +79,7 @@ function App() {
                   <Route path="/shows/edit-show-episode" component={EditShowEpisode} />
 
               <Route path="/category" exact component={Category} />
+                  <Route path="/category/sheet-upload" component={CategorySheet} />
                   <Route path="/category/new-category" component={AddCategory} />
                   <Route path="/category/all-category" component={AllCategory} />
 

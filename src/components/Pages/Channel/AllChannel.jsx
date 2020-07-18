@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Table, Button, Modal, Form, Col, Figure } from 'react-bootstrap';
-import Loader from 'react-loader-spinner';
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
-import { getAllChannel, removeChannel, updateChannel, baseURL } from '../../../services/serviceChannels';
+import ContentLoader from "react-content-loader"
+import ReactPaginate from 'react-paginate';
+// import Loader from 'react-loader-spinner';
+// import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import { getAllChannelPagination, removeChannel, updateChannel, baseURL } from '../../../services/serviceChannels';
 
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import auth from '../../../services/authentication';
@@ -16,6 +18,10 @@ class AllChannel extends Component {
     super(props)
 
     this.state = {
+      next: "not null",
+      totalChannel: 0,
+      paginationCount: 0,
+      currentPage: 1,
       channel: [],
       isLoading: false,
       isEdit: false,
@@ -32,30 +38,38 @@ class AllChannel extends Component {
     this.setState({ isLoading: true });
   }
 
-  async componentDidMount() {
-    //Load all the channel
+  fetchData = async (page = 1) => {
+    let pageNo = page
     this.showLoader();
-    await getAllChannel().then(response => {
-      console.log(response.data.results)
-      this.setState({ channel: response.data.results })
+    await getAllChannelPagination(pageNo).then(response => {
+      // console.log(response.data.results)
+      this.setState({ channel: response.data.results, next: response.data.next, paginationCount: Math.ceil(response.data.count / 10), totalChannel: response.data.count })
       this.hideLoader();
     })
       .catch(error => {
+        toast.error("Error occured while fetching data")
         console.log(error)
+        this.hideLoader();
       });
+
+  }
+
+  async componentDidMount() {
+    //Load all the channel
+    this.fetchData(this.state.currentPage)
   }
 
   async onImageUpload(uniqueSlug, event) {
     this.setState({ imageUpdating: true })
-    console.log("current edited image channel id:, ", uniqueSlug)
+    // console.log("current edited image channel id:, ", uniqueSlug)
     let formData = new FormData();
     switch (event.target.name) {
       case 'featured_image':
-        console.log("featured image switch case ")
+        // console.log("featured image switch case ")
         formData.append('featured_image', event.target.files[0])
         break;
       default:
-        console.log("banner image switch case ")
+        // console.log("banner image switch case ")
         formData.append('banner_image', event.target.files[0])
     }
 
@@ -71,35 +85,46 @@ class AllChannel extends Component {
     })
       .then(res => {
         if (res.status === 200) {
-          console.log("file upload completed")
-          console.log("f Data: ", res.data.featuredImageUrl)
-          console.log("b Data: ", res.data.bannerImageUrl)
-          this.forceUpdate()
+          // console.log("file upload completed")
+          // console.log("f Data: ", res.data.featuredImageUrl)
+          // console.log("b Data: ", res.data.bannerImageUrl)
+          // this.forceUpdate()
           if (res.data.featuredImageUrl !== this.state.editedChannels.featuredImageUrl) {
             this.setState({ editedChannels: { ...this.state.editedChannels, featuredImageUrl: res.data.featuredImageUrl } })
-            console.log("featuredImageUrl updated")
-            console.log("edited image channel id after update:, ", this.state.editedChannels.uniqueSlug)
+            // console.log("featuredImageUrl updated")
+            // console.log("edited image channel id after update:, ", this.state.editedChannels.uniqueSlug)
           }
           if (res.data.bannerImageUrl !== this.state.editedChannels.bannerImageUrl) {
             this.setState({ editedChannels: { ...this.state.editedChannels, bannerImageUrl: res.data.bannerImageUrl } })
-            console.log("bannerImageUrl updated")
+            // console.log("bannerImageUrl updated")
           }
           this.setState({ imageUpdating: false })
         }
       })
-      .catch(err => console.log(err))
+      .catch(error => {
+        toast.error("Error occured while uploading image!")
+        console.log(error)
+        this.hideLoader();
+      });
   }
 
   async onDelete(uniqueSlug, title) {
-
+    this.showLoader();
     await removeChannel(uniqueSlug)
-      .then(response => {
-        if (response.status === 204) {
-          alert(`Channel ${title} deleted successfully.`);
-          this.componentDidMount();
+      .then(()=> {
+        toast.success(`Channel "${title}" deleted successfully!`)
+        if (this.state.next === null && this.state.channel.length < 2 && this.state.currentPage !== 1) {
+          this.setState({ currentPage: this.state.currentPage - 1 }, () => this.fetchData(this.state.currentPage))
+        }
+        else {
+          this.fetchData(this.state.currentPage)
         }
       })
-      .catch(err => console.log(err));
+      .catch(error => {
+        toast.error("Error occured while deleting data!")
+        console.log(error)
+        this.hideLoader();
+      });
   }
 
   handleClose = () => {
@@ -128,26 +153,35 @@ class AllChannel extends Component {
   updateHandler = (e) => {
     e.preventDefault()
     this.handleClose()
-    console.log("data: ", this.state.editedChannels)
-    console.log("id after update: ", this.state.editedChannels.uniqueSlug)
+    this.showLoader()
+    // console.log("data: ", this.state.editedChannels)
+    // console.log("id after update: ", this.state.editedChannels.uniqueSlug)
     updateChannel(this.state.editedChannels.uniqueSlug, this.state.editedChannels)
       .then(response => {
         if (response.status === 200) {
-          alert("Channel updated successfully")
-          this.forceUpdate()
-          return this.componentDidMount()
+          toast.success("Channel updated successfully")
+          // this.forceUpdate()
+          return this.fetchData(this.state.currentPage)
         }
-        alert("Channel updated unsuccessful, please try again later!")
+        toast.error("Channel updated unsuccessful, please try again later!")
       })
       .catch(error => {
-        console.log(JSON.stringify(error));
-        this.forceUpdate()
-        this.componentDidMount()
-      })
+        toast.error("Error occured while updating channel data!")
+        console.log(error)
+        this.hideLoader();
+        this.handleShow();
+      });
   }
+  handlePageClick = data => {
+    this.showLoader()
+    let selected = data.selected + 1;
+    // console.log('selected page no: ', selected)
+    this.setState({ currentPage: selected }, () => this.fetchData(this.state.currentPage))
+  };
   render() {
 
     const { channel } = this.state
+    const loader = <ContentLoader backgroundColor="#c2c2c2"><rect x="0" y="56" rx="3" ry="3" width="150" height="4" /><rect x="0" y="72" rx="3" ry="3" width="100" height="4" /></ContentLoader>
 
     return (
 
@@ -255,39 +289,51 @@ class AllChannel extends Component {
           </Modal>
           : null
         }
-        <h2>List of Channel</h2>
-        {(this.state.isLoading) ? <Loader type="ThreeDots" color="#eb1163" height={100} width={50} /> :
-          <Table responsive hover>
-            <thead>
-              <tr>
-                <th scope="col">Sr.no</th>
-                <th scope="col">Featured Image</th>
-                <th scope="col">Channel Name</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                channel.length ?
-                  channel.map((channel, index) =>
-                    <tr key={channel.uniqueSlug}>
-                      <td key={channel.index}>{index + 1}</td>
-                      <td><img src={channel.featuredImageUrl} alt={channel.title} width="80px"></img></td>
-                      <td>{channel.title}</td>
-                      <td>
-                        <Button variant="primary" onClick={() => this.toggleEdit(channel)}>Edit</Button>
-                        <Button variant="danger" onClick={() => { if (window.confirm(`Are you sure you wish to delete channel ${channel.title}?`)) this.onDelete(channel.uniqueSlug, channel.title) }}>Delete</Button>
-                      </td>
-                    </tr>
-                  ) :
+        <h2>Channel list ({this.state.totalChannel})</h2>
 
-                  null
-              }
-            </tbody>
-          </Table>
-        }
-
-
+        <Table responsive hover>
+          <thead>
+            <tr>
+              <th scope="col">Sr.no</th>
+              <th scope="col">Featured Image</th>
+              <th scope="col">Channel Name</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              !this.state.isLoading ?
+                channel.map((channel, index) =>
+                  <tr key={channel.uniqueSlug}>
+                    <td key={channel.index}>{index + 1}</td>
+                    <td><img src={channel.featuredImageUrl} alt={channel.title} width="80px"></img></td>
+                    <td>{channel.title}</td>
+                    <td>
+                      <Button variant="primary" onClick={() => this.toggleEdit(channel)}>Edit</Button>
+                      <Button variant="danger" onClick={() => { if (window.confirm(`Are you sure you wish to delete channel ${channel.title}?`)) this.onDelete(channel.uniqueSlug, channel.title) }}>Delete</Button>
+                    </td>
+                  </tr>
+                ) :
+                <tr>
+                  <td>{loader}</td>
+                  <td>{loader}</td>
+                  <td>{loader}</td>
+                  <td>{loader}</td>
+                </tr>
+            }
+          </tbody>
+        </Table>
+        <ReactPaginate
+          previousLabel={'<'}
+          nextLabel={'>'}
+          breakLabel={'...'}
+          breakClassName={'break-me'}
+          pageCount={this.state.paginationCount}
+          onPageChange={this.handlePageClick}
+          containerClassName={'pagination'}
+          subContainerClassName={'pages pagination'}
+          activeClassName={'active'}
+        />
       </div>
     )
   }

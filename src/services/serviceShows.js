@@ -4,11 +4,15 @@ import auth from './authentication';
 const baseURL = "https://prod.aawaz.com/api";
 
 const getAllShow = () => {
-    return http.get(`${baseURL}/shows/?all=True -- All Results`,{auth: auth});
+    return http.get(`${baseURL}/shows/?all=True`,{auth: auth});
 };
 
-const getAllShowPaginate = (currentPage = 0)=>{
-    return http.get(`${baseURL}/shows/?limit=10&offset=${currentPage}0`,{auth: auth});
+const getShowsDropDowns = () => {
+    return http.get(`${baseURL}/shows/?all=true&only_select=True`,{auth: auth});
+};
+
+const getAllShowPaginate = (page=1)=>{
+    return http.get(`${baseURL}/shows/?page=${page}`,{auth: auth});
 }
 
 const getShow = id => {
@@ -44,5 +48,6 @@ export  {
     removeShow,
     removeAllShow,
     findByTitleShow,
+    getShowsDropDowns,
     baseURL
 };

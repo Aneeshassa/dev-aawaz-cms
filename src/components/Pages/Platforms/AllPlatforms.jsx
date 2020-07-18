@@ -200,7 +200,7 @@ class AllPlatform extends Component {
                   platform.map((platform, index) =>
                     <tr key={index}>
                       <td key={index}>{index + 1}</td>
-                      <td>{platform.name}</td>
+                      <td>{platform.normalizedName}</td>
                       <td>
                         <Button variant="primary" onClick={() => this.toggleEdit(platform)}>Edit</Button>
                         <Button variant="danger" onClick={() => { if (window.confirm(`Are you sure you wish to delete platform ${platform.name}?`)) this.onDelete(platform.uniqueSlug, platform.name) }}>Delete</Button>

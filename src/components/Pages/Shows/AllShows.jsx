@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Table, Button, Alert, Container, Row, Col, Image } from 'react-bootstrap';
-import Loader from 'react-loader-spinner';
+import ContentLoader from "react-content-loader"
 
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import { getAllShowPaginate, removeShow } from '../../../services/serviceShows';
 import ReactPaginate from 'react-paginate';
-// import '../pagination.css'
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 class AllShows extends Component {
@@ -15,8 +14,10 @@ class AllShows extends Component {
     super(props)
 
     this.state = {
-      total:0,
-      count: 0,
+      next: "not null",
+      totalShow: 0,
+      paginationCount: 0,
+      currentPage: 1,
       shows: [],
       isLoading: false
     }
@@ -30,30 +31,23 @@ class AllShows extends Component {
     this.setState({ isLoading: true });
   }
 
-  fetchData = async () => {
+  fetchData = async (page = 1) => {
     this.showLoader();
-    await getAllShowPaginate().then(response => {
+    await getAllShowPaginate(page).then(response => {
       // console.log(response.data.results)
       // localStorage.setItem("shows", JSON.stringify(response.data.results))
-      this.setState({ shows: response.data.results, count: Math.ceil(response.data.count / 10), total: response.data.count })
+      this.setState({ shows: response.data.results, next: response.data.next, paginationCount: Math.ceil(response.data.count / 10), totalShow: response.data.count })
       this.hideLoader();
     })
       .catch(error => {
-        alert(error)
+        toast.error("Error occured while fetching data")
+        console.log(error)
         this.hideLoader();
       });
   }
 
   async componentDidMount() {
-    //Load all the shows
-
-    // if(JSON.parse(localStorage.getItem('shows'))){
-    //   this.setState({shows: JSON.parse(localStorage.getItem('shows'))})
-    //   return 
-    // }
-    // else{
-    this.fetchData();
-    // }  
+    this.fetchData(this.state.currentPage);
   }
 
   async onDelete(uniqueSlug, title) {
@@ -61,44 +55,45 @@ class AllShows extends Component {
     await removeShow(uniqueSlug)
       .then(response => {
         if (response.status === 204) {
-          alert(`Show ${title} deleted successfully.`);
-          window.location.reload()
+          toast(`Show ${title} deleted successfully.`);
+          if (this.state.next === null && this.state.shows.length < 2 && this.state.currentPage !== 1) {
+            this.setState({ currentPage: this.state.currentPage - 1 }, () => this.fetchData(this.state.currentPage))
+          }
+          else {
+            this.fetchData(this.state.currentPage)
+          }
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        toast.error(`Show ${title} deleted failed.`);
+        console.log(err)
+      });
   }
 
   handlePageClick = data => {
     this.showLoader()
-    let selected = data.selected;
-    console.log('selected page no: ', selected)
-    getAllShowPaginate(selected)
-      .then(res => {
-        this.setState({ shows: res.data.results, count: Math.ceil(res.data.count / 10) });
-        this.hideLoader()
-      })
-      .catch(err => {
-        this.hideLoader()
-        console.log(err)
-      })
+    let selected = data.selected + 1;
+    // console.log('selected page no: ', selected)
+    this.setState({ currentPage: selected }, () => this.fetchData(this.state.currentPage))
   };
 
   render() {
     const { shows } = this.state;
     let imgHash = Date.now()
+    const loader = <ContentLoader backgroundColor="#c2c2c2"><rect x="0" y="56" rx="3" ry="3" width="150" height="4" /><rect x="0" y="72" rx="3" ry="3" width="100" height="4" /></ContentLoader>
     return (
 
       <div>
+        <ToastContainer position="top-right" />
         <Container>
           <Row>
             <Col>
-              <h2>List of Shows({this.state.total})</h2>
+              <h2>Shows list ({this.state.totalShow})</h2>
             </Col>
 
           </Row>
         </Container> <br></br>
 
-        {(this.state.isLoading) ?<div className="loader"><Loader type="ThreeDots" color="#eb1163" height={100} width={50} /></div> :
         <div>
           <Table responsive hover>
             <thead>
@@ -111,7 +106,7 @@ class AllShows extends Component {
             </thead>
             <tbody>
               {
-                shows ?
+                !this.state.isLoading ?
                   shows.map((show, index) =>
                     <tr key={index}>
                       <td>{index + 1}</td>
@@ -124,25 +119,30 @@ class AllShows extends Component {
                       </td>
                     </tr>
                   ) :
-                  null
+                  <tr>
+                    <td>{loader}</td>
+                    <td>{loader}</td>
+                    <td>{loader}</td>
+                    <td>{loader}</td>
+                  </tr>
               }
             </tbody>
           </Table>
-          
-          </div>
-        }
-        {this.state.count === 0? <p>Please wait...</p>:
-        <ReactPaginate
-          previousLabel={'<'}
-          nextLabel={'>'}
-          breakLabel={'...'}
-          breakClassName={'break-me'}
-          pageCount={this.state.count}
-          onPageChange={this.handlePageClick}
-          containerClassName={'pagination'}
-          subContainerClassName={'pages pagination'}          
-          activeClassName={'active'}
-        ></ReactPaginate>}        
+
+        </div>
+
+        {this.state.count === 0 ? <p>Please wait...</p> :
+          <ReactPaginate
+            previousLabel={'<'}
+            nextLabel={'>'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
+            pageCount={this.state.paginationCount}
+            onPageChange={this.handlePageClick}
+            containerClassName={'pagination'}
+            subContainerClassName={'pages pagination'}
+            activeClassName={'active'}
+          ></ReactPaginate>}
       </div>
     )
   }

@@ -22,8 +22,8 @@ class AddChannel extends Component {
       featured_image: undefined,
       dateTime: new Date(),
       published_on:`${moment(new Date()).format()}`,
-      weight: null,
-      sequence: null,
+      weight: 1,
+      sequence: 1,
       short_description: "",
       description: "",
       color: "",
@@ -98,7 +98,7 @@ class AddChannel extends Component {
           this.setState({ isLoading: false })
           return toast.error(`${key} is required!`)
       }
-      console.log(key + ': ' + value);
+      // console.log(key + ': ' + value);
   }
 
     axios({
@@ -113,8 +113,7 @@ class AddChannel extends Component {
       .then(response => {
         if(response.status === 201){
           toast.success(`New Channel ${response.data.title} created successfully.`)
-          this.setState({isLoading: true})
-          window.location.reload(false);
+          this.setState({isLoading: false}, () => setTimeout(() => window.location.reload(), 5000))          
         }
         if(response.status === 400){
           toast.error('Something went wrong, please try again')

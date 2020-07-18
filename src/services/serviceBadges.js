@@ -6,6 +6,10 @@ const getAllBadge = () => {
     return http.get(`${baseURL}/badges/?limit=100`, {auth: auth});
 };
 
+const getBadgeDropDown = () => {
+    return http.get(`${baseURL}/badges/?all=True&only_select=True`, {auth: auth});
+};
+
 const getBadge = id => {
     return http.get(`${baseURL}/badges/${id}`, {auth: auth});
 }
@@ -25,6 +29,7 @@ const removeBadge = id => {
 
 export  {
     getAllBadge,
+    getBadgeDropDown,
     getBadge,
     createBadge,
     updateBadge,

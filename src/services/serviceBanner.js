@@ -7,6 +7,10 @@ const getAllBanner = () => {
     return http.get(`${baseURL}/banners/?limit=100`, {auth: auth});
 };
 
+const getBannerDropDown = () => {
+    return http.get(`${baseURL}/banners/?all=True&only_select=True`, {auth: auth});
+};
+
 const getBanner = id => {
     return http.get(`${baseURL}/banners/${id}`, {auth: auth});
 }
@@ -33,6 +37,7 @@ const findByTitleBanner = title => {
 
 export  {
     getAllBanner,
+    getBannerDropDown,
     getBanner,
     createBanner,
     updateBanner,

@@ -9,7 +9,7 @@ const data = {
 		'May'
 	],
 	datasets: [{
-		data: [100, 80, 10],
+		data: [10, 10, 10],
 		backgroundColor: [
 		'#FF6384',
 		'#36A2EB',

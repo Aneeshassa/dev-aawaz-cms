@@ -15,14 +15,14 @@ class AddCategories extends Component {
     super(props)
     this.state = {
       name: "",
-      weight: null,
+      weight: 1,
       featuredImageView: undefined,
       featured_image:undefined,
 
       iconImageView:undefined,
       iconImageUrl: undefined,
 
-      sequence: null,
+      sequence: 1,
       short_url:"",
       displayName: "",
       titleColor: "",

@@ -7,6 +7,10 @@ const getAllArtist = () => {
     return http.get(`${baseURL}/artists/?limit=200`, {auth: auth});
 };
 
+const getArtistDropDown = () => {
+    return http.get(`${baseURL}/artists/?all=True&only_select=True`, {auth: auth});
+};
+
 const getArtist = id => {
     return http.get(`${baseURL}/artists/${id}/`, {auth: auth});
 }
@@ -25,5 +29,5 @@ const removeArtist = id => {
 
 
 export {
-    getAllArtist, getArtist, createArtist, updateArtist, removeArtist, baseURL
+    getAllArtist,getArtistDropDown, getArtist, createArtist, updateArtist, removeArtist, baseURL
 }

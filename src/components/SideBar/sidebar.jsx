@@ -31,6 +31,7 @@ class SidebarNav extends Component {
 
                         <li className="nav-item">
                           <NavDropdown title="Channel" id="basic-nav-dropdown">
+                            <Link to="/channel/sheet-upload" exact="true" className="nav-link"><i className="fas fa-home"></i>Sheet Upload</Link>
                             <Link to="/channel/all-channel" exact="true" className="nav-link"><i className="fas fa-home"></i>All Channel</Link>
                             <Link to="/channel/new-channel" exact="true" className="nav-link"><i className="fas fa-home"></i>Add New Channel</Link>
                           </NavDropdown>
@@ -38,6 +39,7 @@ class SidebarNav extends Component {
                     
                         <li className="nav-item">
                           <NavDropdown title="Category" id="basic-nav-dropdown">
+                            <Link to="/category/sheet-upload" exact="true" className="nav-link"><i className="fas fa-home"></i>Sheet Upload</Link>
                             <Link to="/category/all-category" exact="true" className="nav-link"><i className="fas fa-home"></i>All Category</Link>
                             <Link to="/category/new-category" exact="true" className="nav-link"><i className="fas fa-home"></i>Add New Category</Link>
                           </NavDropdown>
